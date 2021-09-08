@@ -8,12 +8,12 @@ export default {
         url_workitem_delete: "https://tomasmali.it/boardapi/workitem/deleteWorkitem",
     },
     dev: {
-        url_workitem_update: "http://localhost:3100/workitem/update",
-        url_sprint_get: "http://localhost:3100/workitem/getSprints",
-        url_sprint_insert: "http://localhost:3100/workitem/insertSprint",
-        url_workitem_get: "http://localhost:3100/workitem/get",
-        url_wrkitem_insert: "http://localhost:3100/workitem/insertWorkitem",
-        url_workitem_delete: "http://localhost:3100/workitem/deleteWorkitem",
+        url_workitem_update: "http://localhost:3300/workitem/update",
+        url_sprint_get: "http://localhost:3300/workitem/getSprints",
+        url_sprint_insert: "http://localhost:3300/workitem/insertSprint",
+        url_workitem_get: "http://localhost:3300/workitem/get",
+        url_wrkitem_insert: "http://localhost:3300/workitem/insertWorkitem",
+        url_workitem_delete: "http://localhost:3300/workitem/deleteWorkitem",
     },
 
     getLinkType() {
