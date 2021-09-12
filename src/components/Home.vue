@@ -1,5 +1,57 @@
 <template>
   <div>
+    <div
+      class="modal fade"
+      id="todo"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content ">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Todo for testing
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating">
+              <textarea
+                class="form-control"
+                v-model="wiFromWi.todo"
+                placeholder="Leave a comment here"
+                id="floatingTextarea2"
+                style="height: 400px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              @click="updateTodoList"
+              class="btn btn-sm  btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Salva
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Start sprint modal -->
     <div
       class="modal fade"
@@ -33,6 +85,31 @@
                   id="recipient-name"
                 />
               </div>
+
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Data inizio sprint:</label
+                >
+                <input
+                  type="date"
+                  name="createSprint"
+                  v-model="newStartDate"
+                  class="form-control form-control-sm"
+                  id="recipient-name"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Data fine sprint:</label
+                >
+                <input
+                  type="date"
+                  name="createSprint"
+                  v-model="newEndDate"
+                  class="form-control form-control-sm"
+                  id="recipient-name"
+                />
+              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -48,6 +125,7 @@
               @click="createSprint"
               class="btn btn-sm  btn-primary"
               data-bs-dismiss="modal"
+              :disabled="newStartDate == '' || newEndDate == ''"
             >
               Create sprint
             </button>
@@ -83,7 +161,7 @@
                 <input
                   type="number"
                   name="createSprint"
-                  v-model="wi"
+                  v-model.number="wi"
                   class="form-control form-control-sm"
                   id="recipient-name"
                 />
@@ -124,6 +202,7 @@
               @click="createWorkitem"
               class="btn btn-primary"
               data-bs-dismiss="modal"
+              :disabled="wi < 0 || wi > 999999999 || wi == ''"
             >
               Create Workitem
             </button>
@@ -134,7 +213,7 @@
     <!-- End work item modal -->
     <div class="container px-4 ">
       <div class="row ">
-        <div class="col mx-2  mb-4">
+        <div class="col-sm mx-2  mb-sm-4">
           <div class="input-group input-group-sm mb-3">
             <label class="input-group-text" for="inputGroupSelect01"
               >Sprint</label
@@ -145,7 +224,9 @@
               :v-model="actualSprint"
               @change="onChange($event)"
             >
-              <option selected>{{ actualSprint }}</option>
+              <option disabled :selected="actualSprint">{{
+                actualSprint
+              }}</option>
               <option
                 v-for="item in sprintsList"
                 :key="item.id"
@@ -155,7 +236,7 @@
             </select>
           </div>
         </div>
-        <div class="col">
+        <div class="col-sm mb-3 ">
           <button
             type="button"
             class="btn btn-secondary btn-sm mx-4"
@@ -178,7 +259,7 @@
       </div>
 
       <div class="row g-1 ">
-        <div class="col color-col-1  shadow ">
+        <div class="col-sm color-col-1  shadow ">
           <div class="mx-1">
             <div class="card-header  text-center mb-4 ">
               <b> To Do </b>
@@ -193,8 +274,10 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
+                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
+                  @onTodo="onTodo"
                 >
                 </workitem>
               </div>
@@ -202,7 +285,7 @@
           </div>
         </div>
 
-        <div class="col color-col-1 shadow ">
+        <div class="col-sm color-col-1 shadow ">
           <div class="mx-1">
             <div class="card-header  text-center mb-4 ">
               <b> Start Working </b>
@@ -217,8 +300,10 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
+                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
+                  @onTodo="onTodo"
                 >
                 </workitem>
               </div>
@@ -226,7 +311,7 @@
           </div>
         </div>
 
-        <div class="col color-col-1 shadow">
+        <div class="col-sm color-col-1 shadow">
           <div class="mx-1">
             <div class="card-header  text-center mb-4 ">
               <b>Test</b>
@@ -241,8 +326,10 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
+                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
+                  @onTodo="onTodo"
                 >
                 </workitem>
               </div>
@@ -250,7 +337,7 @@
           </div>
         </div>
 
-        <div class="col color-col-1 shadow ">
+        <div class="col-sm color-col-1 shadow ">
           <div class="mx-1">
             <div class="card-header  text-center mb-4 ">
               <b>Done</b>
@@ -265,8 +352,10 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
+                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
+                  @onTodo="onTodo"
                 >
                 </workitem>
               </div>
@@ -280,6 +369,7 @@
 
 <script>
 import Workitem from "./Workitem.vue";
+
 export default {
   components: {
     Workitem,
@@ -293,23 +383,32 @@ export default {
       sprintsList: [],
       actualSprint: 0,
       newSprint: 0,
+      newStartDate: "",
+      newEndDate: "",
       description: "",
       days: 0,
       wi: 0,
       error: true,
       isLoading: false,
+      wiFromWi: {},
     };
   },
   methods: {
-    async createSprint() {
-      console.log(this.newSprint);
+    updateTodoList() {
+      this.workitemUpdate(this.wiFromWi);
+    },
 
+    async createSprint() {
       try {
         await this.$store.dispatch("workitem/insertSprint", {
           sprint: this.newSprint,
+          start: this.newStartDate,
+          end: this.newEndDate,
         });
 
         this.newSprint = 0;
+        this.newStartDate = "";
+        this.newEndDate = "";
 
         this.loadSprints();
       } catch (error) {
@@ -339,8 +438,6 @@ export default {
     },
 
     async delteWi(id) {
-      console.log(id);
-
       if (
         confirm("Sei sicuro di voler cancellare questo workitem dal database?")
       ) {
@@ -365,6 +462,10 @@ export default {
     onChange(event) {
       this.actualSprint = event.target.value;
       this.loadBoard();
+    },
+
+    onTodo(wiFromWi) {
+      this.wiFromWi = wiFromWi;
     },
 
     async loadBoard() {
@@ -397,8 +498,13 @@ export default {
     async loadSprints() {
       try {
         await this.$store.dispatch("workitem/getSprints");
-        this.sprintsList = this.$store.getters["workitem/getSprints"];
-
+        this.sprintsList = await this.$store.getters["workitem/getSprints"];
+        // Default sprint allways the max sprint
+        let maxSprint = 0;
+        this.sprintsList.forEach((el) => {
+          if (Number(el.sprint) > maxSprint) maxSprint = Number(el.sprint);
+        });
+        this.actualSprint = maxSprint;
         this.loadBoard();
       } catch (error) {
         console.log(error);
@@ -410,8 +516,9 @@ export default {
     },
   },
   created() {
-    this.actualSprint = 23;
     this.loadSprints();
+
+    //  this.actualSprint = 28;
   },
 };
 </script>

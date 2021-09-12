@@ -15,7 +15,7 @@ router.get("/get", (req, res, next) => {
     const sprint = req.query.sprint;
 
     pool.query(
-        "SELECT * FROM workitem WHERE sprint=$1", [sprint],
+        "SELECT * FROM workitem WHERE sprint=$1 ORDER BY color", [sprint],
         (error, results) => {
             if (error) {
                 throw error;
@@ -40,7 +40,16 @@ router.post("/update", (req, res, next) => {
     const wi = req.body.workitem;
 
     pool.query(
-        "UPDATE workitem SET wi=$1, description=$2, days=$3, sprint=$4, status=$5, color=$6 WHERE id=$7", [wi.wi, wi.description, wi.days, wi.sprint, wi.status, wi.color, wi.id],
+        "UPDATE workitem SET wi=$1, description=$2, days=$3, sprint=$4, status=$5, color=$6, todo=$7 WHERE id=$8", [
+            wi.wi,
+            wi.description,
+            wi.days,
+            wi.sprint,
+            wi.status,
+            wi.color,
+            wi.todo,
+            wi.id,
+        ],
         (error, results) => {
             if (error) {
                 throw error;
@@ -60,10 +69,10 @@ router.post("/update", (req, res, next) => {
 });
 
 router.post("/insertSprint", (req, res, next) => {
-    const sprint = req.body.sprint;
+    const sp = req.body.sprint;
 
     pool.query(
-        "INSERT INTO sprint (sprint) VALUES($1)", [sprint.sprint],
+        "INSERT INTO sprint (sprint,start_sprint,end_sprint) VALUES($1,$2,$3)", [sp.sprint, sp.start, sp.end],
         (error, results) => {
             if (error) {
                 console.log(error);
@@ -89,7 +98,7 @@ router.post("/insertWorkitem", (req, res, next) => {
     const wi = req.body.workitem;
 
     pool.query(
-        "INSERT INTO workitem (wi,description,days,sprint,status,color) VALUES($1,$2,$3,$4,$5,$6)", [wi.wi, wi.description, wi.days, wi.sprint, wi.status, wi.color],
+        "INSERT INTO workitem (wi,description,days,sprint,status,color,todo) VALUES($1,$2,$3,$4,$5,$6,$7)", [wi.wi, wi.description, wi.days, wi.sprint, wi.status, wi.color, wi.todo],
         (error, results) => {
             if (error) {
                 console.log(error);

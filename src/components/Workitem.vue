@@ -1,5 +1,7 @@
 <template>
   <div>
+    <div></div>
+
     <div class="card my-2 " :class="color">
       <div class="card-header" id="del">
         <h5 style="display: inline">
@@ -26,9 +28,10 @@
             name="option"
             @change="onStatusChange($event)"
           >
-            <option value=""> {{ status }} </option>
+            <option disabled selected value=""> {{ status }} </option>
+
             <option v-for="item in statusList" :key="item" :value="item">
-              {{ item }}
+              {{ item !== status ? item : "" }}
             </option>
           </select>
         </div>
@@ -42,13 +45,21 @@
         </button>
       </div>
       <div class="card-body  ">
-        <blockquote class="blockquote mb-0">
-          <footer class="blockquote-footer">
-            <small>
-              {{ description }}
-            </small>
-          </footer>
-        </blockquote>
+        <div
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#todo"
+          data-bs-whatever="@mdo"
+          @click="onDescClick"
+        >
+          <blockquote class="blockquote mb-0">
+            <footer class="blockquote-footer">
+              <small>
+                {{ description }}
+              </small>
+            </footer>
+          </blockquote>
+        </div>
       </div>
     </div>
   </div>
@@ -56,7 +67,16 @@
 
 <script>
 export default {
-  props: ["id", "wi", "description", "days", "sprint", "status", "color"],
+  props: [
+    "id",
+    "wi",
+    "description",
+    "days",
+    "sprint",
+    "status",
+    "color",
+    "todo",
+  ],
   emits: ["workitemChange", "delteWi"],
   data() {
     return {
@@ -77,6 +97,7 @@ export default {
         sprint: this.sprint,
         status: this.status,
         color: colorToEmit,
+        todo: this.todo,
       });
     },
     onStatusChange(event) {
@@ -89,9 +110,23 @@ export default {
         sprint: this.sprint,
         status: statusToEmit,
         color: this.color,
+        todo: this.todo,
+      });
+    },
+    onDescClick() {
+      this.$emit("onTodo", {
+        id: this.id,
+        wi: this.wi,
+        description: this.description,
+        days: this.days,
+        sprint: this.sprint,
+        status: this.status,
+        color: this.color,
+        todo: this.todo,
       });
     },
   },
+  computed: {},
 };
 </script>
 
