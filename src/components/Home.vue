@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Modal Todo-->
     <div
       class="modal fade"
       id="todo"
@@ -7,7 +8,7 @@
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-scrollable modal-lg">
+      <div class="modal-dialog modal-dialog-scrollable modal-xl">
         <div class="modal-content ">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">
@@ -22,37 +23,79 @@
           </div>
           <div class="modal-body">
             <div class="form-floating">
-              <textarea
-                class="form-control"
-                v-model="wiFromWi.todo"
-                placeholder="Leave a comment here"
-                id="floatingTextarea2"
-                style="height: 400px"
-              ></textarea>
+              <div class="row">
+                <div class="col text-center my-2 mb-4">
+                  <button
+                    class="btn btn-md btn-primary "
+                    type="button"
+                    @click="insertTodo"
+                  >
+                    Nuovo Todo
+                  </button>
+                </div>
+              </div>
+
+              <ul class="list-group">
+                <li
+                  class="list-group-item"
+                  v-for="item in todosForWi"
+                  :key="item.id"
+                >
+                  <div class="row">
+                    <div class="col col-1 mt-3">
+                      Done
+                      <input
+                        class="form-check-input me-1"
+                        type="checkbox"
+                        value=""
+                        v-model="item.done"
+                        aria-label="..."
+                      />
+
+                      <button
+                        class="btn btn-sm btn-outline-primary mt-3 mb-2"
+                        @click="saveTodo(item)"
+                      >
+                        Save
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-danger"
+                        @click="deleteTodo(item.id)"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                    <div class="col col-11">
+                      <textarea
+                        :class="{
+                          'done-color': item.done,
+                          'not-done-color': !item.done,
+                        }"
+                        class="form-control"
+                        id="exampleFormControlTextarea1"
+                        v-model="item.todo"
+                        rows="6"
+                      ></textarea>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-sm btn-secondary"
+              class="btn btn-md btn-secondary"
               data-bs-dismiss="modal"
             >
               Close
-            </button>
-            <button
-              type="button"
-              @click="updateTodoList"
-              class="btn btn-sm  btn-primary"
-              data-bs-dismiss="modal"
-            >
-              Salva
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Start sprint modal -->
+    <!-- Create Sprint modal -->
     <div
       class="modal fade"
       id="exampleModal"
@@ -133,7 +176,8 @@
         </div>
       </div>
     </div>
-    <!-- Start work item modal -->
+
+    <!-- Create work item modal -->
     <div
       class="modal fade"
       id="workitemModal"
@@ -210,8 +254,11 @@
         </div>
       </div>
     </div>
-    <!-- End work item modal -->
+    <!-- End  -->
+
+    <!-- BOARD ###########################################################-->
     <div class="container px-4 ">
+      <!-- CREATE BUTTON -->
       <div class="row ">
         <div class="col-sm mx-2  mb-sm-4">
           <div class="input-group input-group-sm mb-3">
@@ -257,7 +304,7 @@
           </button>
         </div>
       </div>
-
+      <!-- SHOW BOARD LIST-->
       <div class="row g-1 ">
         <div class="col-sm color-col-1  shadow ">
           <div class="mx-1">
@@ -274,7 +321,6 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
-                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
                   @onTodo="onTodo"
@@ -300,7 +346,6 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
-                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
                   @onTodo="onTodo"
@@ -326,7 +371,6 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
-                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
                   @onTodo="onTodo"
@@ -352,7 +396,6 @@
                   :days="item.days"
                   :status="item.status"
                   :color="item.color"
-                  :todo="item.todo"
                   @workitemChange="workitemUpdate"
                   @delteWi="delteWi"
                   @onTodo="onTodo"
@@ -391,11 +434,36 @@ export default {
       error: true,
       isLoading: false,
       wiFromWi: {},
+      todosForWi: [],
     };
   },
   methods: {
     updateTodoList() {
       this.workitemUpdate(this.wiFromWi);
+    },
+
+    async insertTodo() {
+      try {
+        await this.$store.dispatch("todo/insertTodos_Action", {
+          todo: "",
+          done: false,
+          workitem: this.wiFromWi.id,
+        });
+
+        this.loadTodos();
+      } catch (error) {
+        this.error = error.message || "Failed to authenticate";
+      }
+    },
+
+    async saveTodo(item) {
+      try {
+        await this.$store.dispatch("todo/updateTodos_Action", item);
+
+        this.loadTodos();
+      } catch (error) {
+        this.error = error.message || "Failed to authenticate";
+      }
     },
 
     async createSprint() {
@@ -450,6 +518,17 @@ export default {
       } else return;
     },
 
+    async deleteTodo(id) {
+      if (confirm("Sei sicuro di voler cancellare questo todo dal database?")) {
+        try {
+          await this.$store.dispatch("todo/deleteTodos_Action", { id: id });
+          this.loadTodos();
+        } catch (error) {
+          console.log(error);
+        }
+      } else return;
+    },
+
     async workitemUpdate(item) {
       try {
         await this.$store.dispatch("workitem/updateWorkitem", item);
@@ -464,8 +543,21 @@ export default {
       this.loadBoard();
     },
 
+    async loadTodos() {
+      try {
+        await this.$store.dispatch("todo/getTodos_Action", {
+          workitem: this.wiFromWi.id,
+        });
+        this.todosForWi = await this.$store.getters["todo/getTodos"];
+        //  this.loadBoard();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     onTodo(wiFromWi) {
       this.wiFromWi = wiFromWi;
+      this.loadTodos();
     },
 
     async loadBoard() {
@@ -517,14 +609,21 @@ export default {
   },
   created() {
     this.loadSprints();
-
-    //  this.actualSprint = 28;
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.done-color {
+  color: brown;
+  text-decoration: line-through;
+}
+
+.not-done-color {
+  color: blue;
+}
+
 .color-col-1 {
   background-color: gainsboro;
   margin-left: 8px;

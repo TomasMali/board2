@@ -67,16 +67,7 @@
 
 <script>
 export default {
-  props: [
-    "id",
-    "wi",
-    "description",
-    "days",
-    "sprint",
-    "status",
-    "color",
-    "todo",
-  ],
+  props: ["id", "wi", "description", "days", "sprint", "status", "color"],
   emits: ["workitemChange", "delteWi"],
   data() {
     return {
@@ -97,7 +88,6 @@ export default {
         sprint: this.sprint,
         status: this.status,
         color: colorToEmit,
-        todo: this.todo,
       });
     },
     onStatusChange(event) {
@@ -110,7 +100,6 @@ export default {
         sprint: this.sprint,
         status: statusToEmit,
         color: this.color,
-        todo: this.todo,
       });
     },
     onDescClick() {
@@ -122,7 +111,6 @@ export default {
         sprint: this.sprint,
         status: this.status,
         color: this.color,
-        todo: this.todo,
       });
     },
   },

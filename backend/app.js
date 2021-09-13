@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 
 // connection route
 const workitem = require("./database/queries");
+const todo = require("./database/todo");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 
 // just go to the ather file if you pass me ...
 app.use("/workitem", workitem);
+app.use("/todo", todo);
 
 // if the user requires a path that doesnt exsists, i throw an error
 app.use((req, ser, next) => {
